@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : 'https://sasahyog-assigment.onrender.com')
+const WS_URL = API_URL.replace(/^http/, 'ws')
 const initialMessages = [
   { role: 'assistant', text: 'Hello, I am Mira. I will guide you through a short health intake.' },
   { role: 'assistant', text: 'What is your name?' },
@@ -22,7 +23,7 @@ function App() {
   function connect() {
     if (socketRef.current?.readyState === WebSocket.OPEN) return Promise.resolve(socketRef.current)
     return new Promise((resolve, reject) => {
-      const socket = new WebSocket(API_URL.replace(/^http/, 'ws'))
+      const socket = new WebSocket(WS_URL)
       socketRef.current = socket
       socket.onopen = () => { socket.send(JSON.stringify({ event: 'START_CALL', language })); setStatus('Listening'); resolve(socket) }
       socket.onmessage = ({ data }) => {
